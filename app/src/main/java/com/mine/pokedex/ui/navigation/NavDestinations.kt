@@ -21,13 +21,14 @@ object PokemonDetailsDestination : NavDestinations {
     override val route: String = "pokemon_detail"
     override val titleRes: Int = R.string.pokemon_details
     const val dominantColor: String = "dominantColor"
+    const val dominantLightColor: String = "dominantLightColor"
     const val pokemonName: String = "pokemonName"
-    val routeWithArgs = "$route/{$dominantColor}/{$pokemonName}"
+    val routeWithArgs = "$route/{$dominantColor}/{$dominantLightColor}/{$pokemonName}"
 
     //TODO :- app deep links to pokemon details
     val deepLinks = listOf(
         navDeepLink {
-            uriPattern = "$route/{$dominantColor}/{$pokemonName}"
+            uriPattern = "$route/{$dominantColor}/{$dominantLightColor}/{$pokemonName}"
         }
     )
 

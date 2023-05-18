@@ -27,7 +27,7 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
     primary = Color.Blue,
-    background = LightBlue,
+    background = Color(red = 28, green = 27, blue = 31),
     onBackground = Color.Black,
     surface = Color.White,
     onSurface = Color.Black
@@ -62,8 +62,8 @@ fun PokedexTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
 
         }
     }

@@ -2,6 +2,7 @@ package com.mine.pokedex.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,6 +14,7 @@ import com.mine.pokedex.ui.screens.home.HomeViewModel
 import com.mine.pokedex.ui.screens.pokemon_details_item.PokemonDetailsRoute
 import com.mine.pokedex.ui.screens.pokemon_details_item.PokemonDetailsViewModel
 import com.mine.pokedex.ui.theme.TypePoison
+import com.mine.pokedex.ui.theme.TypeSteel
 
 
 @Composable
@@ -28,8 +30,8 @@ fun NavGraph(
 
         composable(route = HomeDestination.route) {
             HomeRoute(homeViewModel = homeViewModel,
-                navigateToPokemonItemClicked = { dominantColor, pokemonName ->
-                    navController.navigate(PokemonDetailsDestination.route + "/${dominantColor}/${pokemonName}")
+                navigateToPokemonItemClicked = { dominantColors, pokemonName ->
+                    navController.navigate(PokemonDetailsDestination.route + "/${dominantColors.first()}/${dominantColors.last()}/${pokemonName}")
                 })
         }
 
@@ -42,14 +44,22 @@ fun NavGraph(
                 navBackStack.arguments?.getInt(PokemonDetailsDestination.dominantColor)
                     ?: TypePoison.toArgb()
             }
+            val dominantLightColor = remember {
+                navBackStack.arguments?.getInt(PokemonDetailsDestination.dominantLightColor)
+                    ?: TypeSteel.toArgb()
+            }
             val pokemonName = remember {
                 navBackStack.arguments?.getString(PokemonDetailsDestination.pokemonName)
                     ?: "Pokemon"
             }
             PokemonDetailsRoute(
-                dominantColor,
-                pokemonName,
-                detailsViewModel = detailsViewModel
+                dominantColors = listOf<Color>(
+                    Color(dominantColor),
+                    Color(dominantLightColor)
+                ),
+                pokemonName = pokemonName,
+                detailsViewModel = detailsViewModel,
+                {navController.navigateUp()}
             )
         }
     }

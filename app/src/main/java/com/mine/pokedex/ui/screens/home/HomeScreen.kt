@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,7 +16,9 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,13 +41,20 @@ import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.mine.pokedex.network.model.Pokemon
-import com.mine.pokedex.ui.navigation.PokemonDetailsDestination.dominantColor
+import com.mine.pokedex.ui.components.ErrorScreen
+import com.mine.pokedex.ui.components.LoadingScreen
+import com.mine.pokedex.ui.components.PokedexTopAppBar
+import com.mine.pokedex.ui.screens.pokemon_details_item.PokemonCard
+import com.mine.pokedex.ui.screens.pokemon_details_item.PokemonImage
 import com.mine.pokedex.ui.theme.TypePoison
 import com.mine.pokedex.ui.theme.TypeSteel
 
 
 @Composable
-fun HomeScreen(homeUiState: HomeUiState, navigateToPokemonItemClicked: (Int, String) -> Unit) {
+fun HomeScreen(
+    homeUiState: HomeUiState,
+    navigateToPokemonItemClicked: (List<Int>, String) -> Unit
+) {
     when (homeUiState) {
         is HomeUiState.Loading -> LoadingScreen()
         is HomeUiState.Success -> Results(homeUiState.pokemons, navigateToPokemonItemClicked)
@@ -54,32 +62,29 @@ fun HomeScreen(homeUiState: HomeUiState, navigateToPokemonItemClicked: (Int, Str
     }
 }
 
-@Composable
-fun LoadingScreen() {
-    Text("Loading")
-}
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ErrorScreen() {
-    Text("Error")
-}
-
-@Composable
-fun Results(pokemons: List<Pokemon>, navigateToPokemonItemClicked: (Int, String) -> Unit) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(all = 5.dp)
-    ) {
-        items(pokemons) { pokemon ->
-            PokemonCard(pokemon = pokemon) { dominantColor, pokemonName ->
-                navigateToPokemonItemClicked(dominantColor, pokemonName)
+fun Results(pokemons: List<Pokemon>, navigateToPokemonItemClicked: (List<Int>, String) -> Unit) {
+    Scaffold(
+        topBar = { PokedexTopAppBar(searchEnable = true ) }
+    ) { innerPadding ->
+        LazyVerticalGrid(
+            modifier = Modifier.padding(innerPadding),
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(all = 5.dp)
+        ) {
+            items(pokemons) { pokemon ->
+                PokemonCard(pokemon = pokemon) { dominantColor, pokemonName ->
+                    navigateToPokemonItemClicked(dominantColor, pokemonName)
+                }
             }
         }
     }
 }
 
 @Composable
-fun PokemonCard(pokemon: Pokemon, navigateToPokemonItemClicked: (Int, String) -> Unit) {
+fun PokemonCard(pokemon: Pokemon, navigateToPokemonItemClicked: (List<Int>, String) -> Unit) {
     val defaultColor = TypePoison
     val defaultColorLight = TypeSteel
     var dominantColor by remember { mutableStateOf(defaultColor) }
@@ -90,7 +95,7 @@ fun PokemonCard(pokemon: Pokemon, navigateToPokemonItemClicked: (Int, String) ->
             .clip(RoundedCornerShape(15.dp))
             .clickable(onClick = {
                 navigateToPokemonItemClicked(
-                    dominantColor.toArgb(),
+                    listOf(dominantColor.toArgb(), dominantLightColor.toArgb()),
                     pokemon.name
                 )
             }),

@@ -60,6 +60,11 @@ data class Pokemoninfo(
     val exp: Int = Random.nextInt(maxExp)
 ) {
 
+    fun getImageUrl():String{
+        return  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/$id.svg"
+    }
+
+
     fun getIdString(): String = String.format("#%03d", id)
     fun getWeightString(): String = String.format("%.1f KG", weight.toFloat() / 10)
     fun getHeightString(): String = String.format("%.1f M", height.toFloat() / 10)

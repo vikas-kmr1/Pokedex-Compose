@@ -110,4 +110,6 @@ dependencies {
     //sandwich by skydoves
     implementation "com.github.skydoves:sandwich:1.3.5"
 
+    // Accompanist
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.18.0"
 }
