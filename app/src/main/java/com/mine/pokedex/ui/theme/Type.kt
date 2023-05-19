@@ -33,6 +33,18 @@ val Typography = Typography(
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp
     ),
+     titleMedium = TextStyle(
+        fontFamily = RobotoCondensed,
+        fontWeight = FontWeight.Light,
+        fontSize = 16.sp
+    ),
+    titleSmall = TextStyle(
+        fontFamily = RobotoCondensed,
+        fontWeight = FontWeight.Bold,
+        fontSize = 12.sp
+    ),
+
+
     /* Other default text styles to override
     button = TextStyle(
         fontFamily = FontFamily.Default,

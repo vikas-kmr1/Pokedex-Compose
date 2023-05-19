@@ -1,12 +1,16 @@
 package com.mine.pokedex.ui.screens.home
 
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
@@ -40,20 +45,18 @@ import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
+import com.mine.pokedex.R
 import com.mine.pokedex.network.model.Pokemon
 import com.mine.pokedex.ui.components.ErrorScreen
 import com.mine.pokedex.ui.components.LoadingScreen
 import com.mine.pokedex.ui.components.PokedexTopAppBar
-import com.mine.pokedex.ui.screens.pokemon_details_item.PokemonCard
-import com.mine.pokedex.ui.screens.pokemon_details_item.PokemonImage
 import com.mine.pokedex.ui.theme.TypePoison
 import com.mine.pokedex.ui.theme.TypeSteel
 
 
 @Composable
 fun HomeScreen(
-    homeUiState: HomeUiState,
-    navigateToPokemonItemClicked: (List<Int>, String) -> Unit
+    homeUiState: HomeUiState, navigateToPokemonItemClicked: (List<Int>, String) -> Unit
 ) {
     when (homeUiState) {
         is HomeUiState.Loading -> LoadingScreen()
@@ -66,9 +69,7 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Results(pokemons: List<Pokemon>, navigateToPokemonItemClicked: (List<Int>, String) -> Unit) {
-    Scaffold(
-        topBar = { PokedexTopAppBar(searchEnable = true ) }
-    ) { innerPadding ->
+    Scaffold(topBar = { PokedexTopAppBar(searchEnable = true) }) { innerPadding ->
         LazyVerticalGrid(
             modifier = Modifier.padding(innerPadding),
             columns = GridCells.Fixed(2),
@@ -90,13 +91,10 @@ fun PokemonCard(pokemon: Pokemon, navigateToPokemonItemClicked: (List<Int>, Stri
     var dominantColor by remember { mutableStateOf(defaultColor) }
     var dominantLightColor by remember { mutableStateOf(defaultColorLight) }
     ElevatedCard(
-        modifier = Modifier
-            .padding(end = 10.dp, top = 5.dp, bottom = 5.dp)
-            .clip(RoundedCornerShape(15.dp))
-            .clickable(onClick = {
+        modifier = Modifier.padding(end = 10.dp, top = 5.dp, bottom = 5.dp)
+            .clip(RoundedCornerShape(15.dp)).clickable(onClick = {
                 navigateToPokemonItemClicked(
-                    listOf(dominantColor.toArgb(), dominantLightColor.toArgb()),
-                    pokemon.name
+                    listOf(dominantColor.toArgb(), dominantLightColor.toArgb()), pokemon.name
                 )
             }),
         shape = CardDefaults.elevatedShape,
@@ -106,12 +104,11 @@ fun PokemonCard(pokemon: Pokemon, navigateToPokemonItemClicked: (List<Int>, Stri
             modifier = Modifier.fillMaxSize().background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        dominantColor,
-                        dominantLightColor
+                        dominantColor, dominantLightColor
                     )
                 )
-            ),
-            horizontalAlignment = Alignment.CenterHorizontally
+            ), horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -134,13 +131,20 @@ fun PokemonCard(pokemon: Pokemon, navigateToPokemonItemClicked: (List<Int>, Stri
 
 @Composable
 fun PokemonImage(pokemon: Pokemon, getDominantColors: (Color, Color) -> Unit) {
-    AsyncImage(
-        model = ImageRequest
-            .Builder(context = LocalContext.current)
-            .data(pokemon.getImageUrl())
-            .decoderFactory(SvgDecoder.Factory())
-            .listener(
-                onSuccess = { _, result ->
+    Box(modifier = Modifier.fillMaxWidth(),
+    contentAlignment = Alignment.Center) {
+        Image(
+            painter = painterResource(R.drawable.pokeball),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.size(POKEMON_BALL_SIZE.dp)
+        )
+
+        AsyncImage(
+            model = ImageRequest
+                .Builder(context = LocalContext.current)
+                .data(pokemon.getImageUrl())
+                .decoderFactory(SvgDecoder.Factory()).listener(onSuccess = { _, result ->
                     // Create the palette on a background thread.
                     Palette.Builder(result.drawable.toBitmap()).generate { palette ->
                         val dominantColor = palette?.dominantSwatch?.rgb?.let { colorVal ->
@@ -151,19 +155,18 @@ fun PokemonImage(pokemon: Pokemon, getDominantColors: (Color, Color) -> Unit) {
                         } ?: TypeSteel
 
                         getDominantColors(dominantColor, dominantLightColor)
-
-
                     }
 
-
                 })
-            .crossfade(true)
-            .build(),
-        modifier = Modifier.size(120.dp),
-        placeholder = null,
-        contentDescription = "${pokemon.name} image",
-        contentScale = ContentScale.Fit
-    )
+                .crossfade(true).build(),
+            modifier = Modifier.size(POKEMON_IMAGE_SIZE.dp),
+            placeholder = null,
+            contentDescription = "${pokemon.name} image",
+            contentScale = ContentScale.Fit
+        )
+
+    }
 }
 
-
+private const val POKEMON_IMAGE_SIZE = 40
+private const val POKEMON_BALL_SIZE = 120
