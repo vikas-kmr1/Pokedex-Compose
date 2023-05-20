@@ -5,14 +5,14 @@ import androidx.compose.ui.graphics.Color
 internal val LightBlue = Color(0xFFBAC7FF)
 internal val lightGrey = Color(0xFFAAAAAA)
 
-internal val HPColor = Color(0xFFF5FF00)
+internal val HPColor = Color(0xFFFFD20A)
 internal val AtkColor = Color(1f, 0f, 0f, 0.66f)
 internal val DefColor = Color(0f, 0f, 1f, 0.44f)
 internal val SpAtkColor = Color(0.671f, 0f, 1f, 0.57f)
-internal val SpDefColor = Color(1f, 0f, 0.8f, 0.7f)
+internal val ExpColor = Color(1f, 0f, 0.8f, 0.7f)
 internal val SpdColor = Color(0f, 1f, 0.063f, 0.55f)
 
-internal val TypeNormal = Color(0xFFA8A77A)
+internal val TypeNormal = Color(0xFF68685D)
 internal val TypeFire = Color(0xFFB22328)
 internal val TypeWater = Color(0xFF2648DC)
 internal val TypeElectric = Color(0xFFE0E64B)

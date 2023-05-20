@@ -13,6 +13,7 @@ import com.mine.pokedex.ui.theme.TypeGhost
 import com.mine.pokedex.ui.theme.TypeGrass
 import com.mine.pokedex.ui.theme.TypeGround
 import com.mine.pokedex.ui.theme.TypeIce
+import com.mine.pokedex.ui.theme.TypeNormal
 import com.mine.pokedex.ui.theme.TypePoison
 import com.mine.pokedex.ui.theme.TypePsychic
 import com.mine.pokedex.ui.theme.TypeRock
@@ -41,6 +42,7 @@ object PokemonTypeUtils {
             "dragon" -> TypeDragon
             "fairy" -> TypeFairy
             "dark" -> TypeDark
+            "normal" -> TypeNormal
             else -> Color.LightGray
         }
     }

@@ -57,7 +57,7 @@ data class Pokemoninfo(
     val attack: Int = Random.nextInt(maxAttack),
     val defense: Int = Random.nextInt(maxDefense),
     val speed: Int = Random.nextInt(maxSpeed),
-    val exp: Int = Random.nextInt(maxExp)
+    val exp: Int = Random.nextInt(maxExp),
 ) {
 
     fun getImageUrl():String{

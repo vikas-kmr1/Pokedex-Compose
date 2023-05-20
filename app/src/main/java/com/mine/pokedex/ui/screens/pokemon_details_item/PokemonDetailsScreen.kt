@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedAssistChip
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
@@ -44,6 +46,10 @@ import com.mine.pokedex.network.model.others.Type
 import com.mine.pokedex.ui.components.ErrorScreen
 import com.mine.pokedex.ui.components.LoadingScreen
 import com.mine.pokedex.ui.components.PokedexTopAppBar
+import com.mine.pokedex.ui.components.PokemonStatsProgressBar
+import com.mine.pokedex.ui.screens.home.PokemonImage
+import com.mine.pokedex.ui.utils.PokemonStatRatiosTypeUtils
+import com.mine.pokedex.ui.utils.PokemonStatTypeUtils
 import com.mine.pokedex.ui.utils.PokemonTypeUtils
 
 @Composable
@@ -74,8 +80,8 @@ fun Results(pokemoninfo: Pokemoninfo, dominantColors: List<Color>, navigateBack:
             pokemonInfo = pokemoninfo,
             navigateBack = navigateBack
         )
-
         MiddleInfoSection(pokemonInfo = pokemoninfo)
+        PokemonBottomStats(pokemonInfo = pokemoninfo)
     }
 }
 
@@ -101,7 +107,7 @@ fun PokemonCard(dominantColors: List<Color>, pokemonInfo: Pokemoninfo, navigateB
                 handleNavBack = navigateBack
             )
             PokemonImage(pokemonInfo.getImageUrl())
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(15.dp))
         }
     }
 }
@@ -111,12 +117,38 @@ fun MiddleInfoSection(pokemonInfo: Pokemoninfo) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(text = pokemonInfo.name, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.ExtraBold)
+        Spacer(modifier = Modifier.height(15.dp))
+        Text(
+            text = pokemonInfo.name,
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.ExtraBold
+        )
         TypeChipGroup(types = pokemonInfo.types)
         Spacer(modifier = Modifier.height(10.dp))
         PhysiqueDetails(pokemonInfo = pokemonInfo)
 
+    }
+}
+
+@Composable
+fun PokemonBottomStats(pokemonInfo: Pokemoninfo) {
+    val statTypeRationPair = listOf(
+        Pair("hp", pokemonInfo.hp / Pokemoninfo.maxHp.toFloat()),
+        Pair("atk", pokemonInfo.attack / Pokemoninfo.maxAttack.toFloat()),
+        Pair("def", pokemonInfo.defense / Pokemoninfo.maxDefense.toFloat()),
+        Pair("spd", pokemonInfo.speed / Pokemoninfo.maxSpeed.toFloat()),
+        Pair("exp",pokemonInfo.exp/Pokemoninfo.maxExp.toFloat())
+    )
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = "Base Stats", style = MaterialTheme.typography.headlineMedium)
+        statTypeRationPair.forEach { pair ->
+            PokemonStatsProgressBar(
+                statLable = pair.first,
+                indicatorProgress = pair.second,
+                statRationLabel = PokemonStatRatiosTypeUtils.getStatRationString(type = pair.first, pokemoninfo = pokemonInfo),
+                color = PokemonStatTypeUtils.getTypeColor(type = pair.first)
+            )
+        }
     }
 }
 
@@ -145,7 +177,12 @@ fun TypeChipGroup(types: List<Type>) {
     ) {
         types.forEach { type ->
             ElevatedAssistChip(
-                label = { Text(modifier = Modifier.padding(horizontal = 20.dp),text = type.type.name) },
+                label = {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                        text = type.type.name
+                    )
+                },
                 onClick = {},
                 enabled = false,
                 colors = AssistChipDefaults.assistChipColors(
@@ -166,7 +203,7 @@ fun PhysiqueDetails(pokemonInfo: Pokemoninfo) {
     ) {
         Box(modifier = Modifier.wrapContentSize()) {
             Image(
-                modifier =Modifier.size(POKEMON_Box_SIZE.dp),
+                modifier = Modifier.size(POKEMON_Box_SIZE.dp),
                 painter = painterResource(R.drawable.weight),
                 contentScale = ContentScale.FillBounds,
                 contentDescription = null,
@@ -175,7 +212,7 @@ fun PhysiqueDetails(pokemonInfo: Pokemoninfo) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
-                modifier = Modifier.size(POKEMON_Box_SIZE.dp).offset(y= 15.dp),
+                modifier = Modifier.size(POKEMON_Box_SIZE.dp).offset(y = 15.dp),
             ) {
                 Text(
                     text = pokemonInfo.getWeightString(),
@@ -191,16 +228,18 @@ fun PhysiqueDetails(pokemonInfo: Pokemoninfo) {
 
         Box(modifier = Modifier.wrapContentSize()) {
             Image(
-                modifier = Modifier.width((POKEMON_Box_SIZE).dp).height((POKEMON_Box_SIZE+10).dp),
+                modifier = Modifier.width((POKEMON_Box_SIZE).dp).height((POKEMON_Box_SIZE + 10).dp),
                 painter = painterResource(R.drawable.resize),
                 contentScale = ContentScale.FillBounds,
                 contentDescription = null,
                 alpha = 0.1f,
                 colorFilter = ColorFilter.tint(Color.White)
             )
-            Column( modifier = Modifier.size( (POKEMON_Box_SIZE).dp).offset(y=10.dp),
+            Column(
+                modifier = Modifier.size((POKEMON_Box_SIZE).dp).offset(y = 10.dp),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally) {
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(
                     text = pokemonInfo.getHeightString(),
                     style = MaterialTheme.typography.headlineSmall
@@ -214,10 +253,9 @@ fun PhysiqueDetails(pokemonInfo: Pokemoninfo) {
         }
     }
 }
-private const val POKEMON_IMAGE_SIZE = 220
+
+private const val POKEMON_IMAGE_SIZE = 200
 private const val POKEMON_Box_SIZE = 100
-
-
 
 
 
